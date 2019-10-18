@@ -22,14 +22,14 @@ THIS CODE IS PROVIDED "AS IS" - NO WARRANTY IS GIVEN.
 
 
 #include <Wire.h>
-
+int Intensity_period = 30; // Intensity period and how often we want to ask device for rainfall intensity.
 unsigned long UpdateRate = 4000; //Number of ms between serial prints, 4 seconds by default
 uint8_t ADR = 0x08; //Address of slave device, 0x08 by default
 
 void setup() {
   Wire.begin();        // join i2c bus (address optional for master)
   Serial.begin(57600);  // start serial for output
-  Serial.print("Welcome to the Machine...\n\n"); //Genaric begin statment for monitor
+  Serial.print("I can't beat the crap out of you without getting closer"); //Genaric begin statment for monitor
 }
 
 void loop() {
@@ -38,12 +38,13 @@ void loop() {
   uint8_t Byte2 = 0;
 
   Wire.requestFrom(ADR, 2);    // request 2 bytes from slave device #8
+  
   Byte1 = Wire.read();  //Read number of tips back
   Byte2 = Wire.read();
 
   tips = ((Byte2 << 8) | Byte1); //Concatenate bytes
 
-  Serial.print("Number of Tips since last read = ");
+  Serial.print("Intensity last read = ");
 
   if (tips == 65535)
   {
@@ -51,8 +52,9 @@ void loop() {
   }
   else
   {
+      tips = tips/Intensity_period;
       Serial.println(tips);  //Prints out tips to monitor
   }
 
-  delay(UpdateRate); //Waits for next period
+  delay(Intensity_period); //Waits for next period
 }
